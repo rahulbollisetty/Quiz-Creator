@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}
+{{form.title}} 
+{% endblock %}
+{% load static %}
+{% block script %}
+<script src = "{% static 'js/index.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/form_style.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="create-form">
+        <div class="container">
+            <p class="forms-label">Create a new Exam</p>
+            <div class="form-template-box">
+                <button type="button" class="btn btn-primary" id="create-blank-form" >Create</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
