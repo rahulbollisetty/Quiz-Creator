@@ -32,6 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
 
+    document.querySelector('.publish').addEventListener('click', function(){
+        fetch('form_publish',{
+            method: "POST",
+            headers: {'X-CSRFToken': csrf},
+            body: JSON.stringify({})
+        })
+    })
+
     const editQuestion = () => {
         document.querySelectorAll('.input-question').forEach(question => {
             question.addEventListener('input', function(){

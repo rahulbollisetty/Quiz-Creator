@@ -4,8 +4,15 @@
 
 body{
     scroll-behavior: smooth;
+    font-size: medium;
 }
-
+thead input {
+    width: 100%;
+}
+.inline-text {
+    display: inline-grid;
+    margin-right: 1rem;
+}
 .form-error{
     font-family: "Permanent Marker";
     color: red;
@@ -80,7 +87,7 @@ body{
 
 .create-form{
     background-color: #f1f3f4;
-    width: 100vw;
+    width: 95vw;
     float: left;
 }
 

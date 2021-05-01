@@ -24,7 +24,15 @@ class Exam(models.Model):
     owner = models.ForeignKey(User,on_delete=models.CASCADE,related_name="owner")
     email = models.EmailField(null=True)
     questions = models.ManyToManyField(Question, related_name="questions")
-    is_score = models.BooleanField(default=False)
+    is_publish = models.BooleanField(default=False)
     view_score = models.BooleanField(default=False)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+class Responses(models.Model):
+    response_code = models.CharField(max_length=20)
+    response_to = models.ForeignKey(Exam, on_delete = models.CASCADE, related_name = "response_to")
+    responder_ip = models.CharField(max_length=30)
+    responder = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "responder", blank = True, null = True)
+    responder_email = models.EmailField(blank = True)
+    response = models.ManyToManyField(Ans, related_name = "response")

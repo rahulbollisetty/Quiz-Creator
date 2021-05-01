@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
-from .models import User,Options,Question,Ans,Exam
+from .models import User,Options,Question,Ans,Exam,Responses
 from acc.models import Profile
 import json
 import random
@@ -8,7 +8,14 @@ import string
 import uuid
 # Create your views here.
 def index(request):
-    return render(request,'index.html')
+    form = Exam.objects.filter(owner=request.user.id)
+    if request.method == "GET":
+        if form.count() == 0:
+            return render(request,'index.html')
+        if form[0].owner != request.user:
+            return HttpResponse("You are not authorised to access this form")
+        else:
+            return render(request,'index.html', context={'form':form})
 def create(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -28,6 +35,42 @@ def edit_form(request,id):
         return HttpResponse("You are not authorised to access this form")
     else:
         return render(request,'exam_form.html',{"code" : id,'form':form})
+
+def form_publish(request,id):
+    form = Exam.objects.filter(uuid=id)
+    if form.count() == 0:
+        return HttpResponse("exam form not found")
+    else:
+        form = form[0]
+    if form.owner != request.user:
+        return HttpResponse("You are not authorised to access this form")
+    if request.method == "POST":
+        form.is_publish = True
+        form.save()
+        return JsonResponse({"message" : "Success"})
+
+def delete_form(request):
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        form = Exam.objects.filter(uuid=data["id"])
+        if form.count() == 0:
+            return HttpResponse("exam form not found")
+        else:
+            form = form[0]
+        if form.owner != request.user:
+            return HttpResponse("You are not authorised to access this form")
+        
+        for i in form.questions.all():
+            for j in i.options.all():
+                j.delete()
+            i.delete()
+        for i in Responses.objects.filter(response_to = form):
+            for j in i.response.all():
+                j.delete()
+            i.delete()
+        form.delete()
+        return JsonResponse({"message" : "Success"})
+
 
 def edit_title(request,id):
     form = Exam.objects.filter(uuid=id)
@@ -70,16 +113,23 @@ def add_question(request,id):
         return HttpResponse("You are not authorised to access this form")
     if request.method == "POST":
         data = json.loads(request.body)
-        choices = Options(optn = "Option 1")
-        choices.save()
-        question = Question(q_type=data["type"], ques="Untitled Question", req=False)
-        question.save()
-        question.options.add(choices)
-        question.save()
-        form.questions.add(question)
-        form.save()
-        return JsonResponse({'question': {'ques': "Untitled Question", 'q_type': question.q_type, 'req': False, 'id': question.id},
-        'choices': {'optn': "Option 1", 'is_correct': False, 'id': choices.id}})
+        if data["type"] == "mcq" or data["type"] == "msq":
+            choices = Options(optn = "Option 1")
+            choices.save()
+            question = Question(q_type=data["type"], ques="Untitled Question", req=False)
+            question.save()
+            question.options.add(choices)
+            question.save()
+            form.questions.add(question)
+            form.save()
+            return JsonResponse({'question': {'ques': "Untitled Question", 'q_type': question.q_type, 'req': False, 'id': question.id},
+            'choices': {'optn': "Option 1", 'is_correct': False, 'id': choices.id}})
+        else:
+            question = Question(q_type=data["type"], ques="Untitled Question", req=False)
+            question.save()   
+            form.questions.add(question)
+            form.save()
+            return JsonResponse({'question': {'ques': "Untitled Question", 'q_type': question.q_type, 'req': False, 'id': question.id}})
 
 def edit_choice(request,id):
     form = Exam.objects.filter(uuid=id)

@@ -16,10 +16,12 @@
       <button class="btn btn-outline-success" id="add-la" type="button">Add Long Answer</button>
     </div>
     <div class="form-navigation right">
-        <span class="col-6 navigation active"><a href="#"></a> Questions</span>
+        <span class="col-6 navigation active"><a href="{% url 'edit_form' form.uuid %}"></a> Questions</span>
         <span class="col-6 navigation"><a href = "#" class="link">Responses</a></span>
-
+        <span class="col-6 navigation"><a href = "#" class="link">Score</a></span>
     </div>
+    <button type="button" class="btn btn-primary publish" data-id="{{form.code}}">Publish</button>
+
 </nav>
 <div class="margin-top-bottom box question-box" id="form-head">
         <!-- Input type text -->
