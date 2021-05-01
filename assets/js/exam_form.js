@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     const csrf = Cookies.get('csrftoken');
+
+    document.querySelectorAll(".textarea-adjust").forEach(tx => {
+        tx.style.height = "auto";
+        tx.style.height = (10 + tx.scrollHeight)+"px";
+        tx.addEventListener('input', e => {
+            tx.style.height = "auto";
+            tx.style.height = (10 + tx.scrollHeight)+"px";
+        })
+    })
+
     document.querySelector("#input-form-title").addEventListener("input",function(){
         fetch('edit_title', {
             method: "POST",
@@ -126,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addOption = () => {
         document.querySelectorAll(".add-option").forEach(question =>{
             question.addEventListener("click", function(){
-                console.log('hi')
                 fetch('add_choice',{
                     method: "POST",
                     headers: {'X-CSRFToken': csrf},
@@ -141,12 +150,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(this.dataset.type === "mcq"){
                         element.innerHTML = `
                         <div class="form-check">
-                        <input class="form-check-input" type="radio" id="${result["id"]}" >
+                        <input class="form-check-input" type="radio" id="${result["id"]}" disabled>
                         <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choice"]}" data-id="${result["id"]}"><span class="remove-option" title = "Remove" data-id="${result["id"]}">&times;</span>
                         </div>
                         `;
                     }
-                    else if(this.dataset.type === 'msq'){}
+                    else if(this.dataset.type === 'msq'){
+                        element.innerHTML = `
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="${result["id"]}" disabled>
+                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choice"]}" data-id="${result["id"]}"><span class="remove-option" title = "Remove" data-id="${result["id"]}">&times;</span>
+                        </div>
+                        `;
+                    }
                     document.querySelectorAll(".choices").forEach(choices => {
                         if(choices.dataset.id === this.dataset.question){
                             choices.insertBefore(element, choices.childNodes[choices.childNodes.length -2]);
@@ -180,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- Input type text -->
             <div class="form-group">
                 <label>Question</label>
-                <input type="text" data-id="${result["question"].id}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
+                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
             </div>
             
             <!-- Input type radio -->
@@ -189,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- for loop -->
                 <div class="choice">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" id="${result["choices"].id}" >
+                        <input class="form-check-input" type="radio" id="${result["choices"].id}" disabled>
                         <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}"><span class="remove-option" title = "Remove" data-id="${result["choices"].id}">&times;</span>
                     </div>
                 </div>
@@ -220,4 +236,169 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteQuestion()
         })
     })
+    
+    document.querySelector("#add-msq").addEventListener("click", () => {
+        fetch('add_question', {
+            method: "POST",
+            headers: {'X-CSRFToken': csrf},
+            body: JSON.stringify({
+                "type": 'msq'
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            let element = document.createElement('div')
+            element.classList.add('margin-top-bottom')
+            element.classList.add('box')
+            element.classList.add('question-box')
+            element.classList.add('question')
+            element.setAttribute("data-id", result["question"].id)
+            element.innerHTML = `
+            <!-- Input type text -->
+            <div class="form-group">
+                <label>Question</label>
+                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
+            </div>
+            
+            <!-- Input type radio -->
+            <div class="form-group choices" data-id="${result["question"].id}">
+                <label>Options</label>
+                <!-- for loop -->
+                <div class="choice">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="${result["choices"].id}" disabled>
+                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}"><span class="remove-option" title = "Remove" data-id="${result["choices"].id}">&times;</span>
+                    </div>
+                </div>
+                <!-- end for loop -->
+            </div>
+            <button type="button" class="btn btn-outline-dark btn-sm add-option" data-question="${result["question"].id}" data-type="${result["question"].q_type}">Add Option</button>
+            <!-- Input type checkbox -->
+            <hr>
+            <div class="form-group choice-option">
+                <div>
+                    <div class="form-check">
+                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
+                        <label class="form-check-label required" for="">required</label>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
+                </div>
+            </div>
+            `;
+            document.querySelector(".main-container").appendChild(element);
+            editOption()
+            removeOption()
+            addOption()
+            editQuestion()
+            editRequire()
+            deleteQuestion()
+        })
+    })
+
+    document.querySelector("#add-sa").addEventListener("click", () => {
+        fetch('add_question', {
+            method: "POST",
+            headers: {'X-CSRFToken': csrf},
+            body: JSON.stringify({
+                "type": 'sa'
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            let element = document.createElement('div')
+            element.classList.add('margin-top-bottom')
+            element.classList.add('box')
+            element.classList.add('question-box')
+            element.classList.add('question')
+            element.setAttribute("data-id", result["question"].id)
+            element.innerHTML = `
+            <!-- Input type text -->
+            <div class="form-group">
+                <label>Question</label>
+                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
+            </div>
+            
+            <!-- Input type Short Answer -->
+            <div class="form-group answer" data-id="${result["question"].id}">
+                <label>Answer</label>
+                <input type="text" class="form-control short-answer" disabled placeholder="Short answer text">
+            </div>
+
+            <!-- Input type checkbox -->
+            <hr>
+            <div class="form-group choice-option">
+                <div>
+                    <div class="form-check">
+                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
+                        <label class="form-check-label required" for="">required</label>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
+                </div>
+            </div>
+            `;
+            document.querySelector(".main-container").appendChild(element);
+            editQuestion()
+            editRequire()
+            deleteQuestion()
+        })
+    })
+
+
+    document.querySelector("#add-la").addEventListener("click", () => {
+        fetch('add_question', {
+            method: "POST",
+            headers: {'X-CSRFToken': csrf},
+            body: JSON.stringify({
+                "type": 'la'
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            let element = document.createElement('div')
+            element.classList.add('margin-top-bottom')
+            element.classList.add('box')
+            element.classList.add('question-box')
+            element.classList.add('question')
+            element.setAttribute("data-id", result["question"].id)
+            element.innerHTML = `
+            <!-- Input type text -->
+            <div class="form-group">
+                <label>Question</label>
+                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
+            </div>
+            
+            <!-- Input type Long Answer -->
+            <div class="form-group answer" data-id="${result["question"].id}">
+                <label>Answer</label>
+                <textarea class="form-control long-answer" disabled placeholder="Long answer text"></textarea>
+            </div>
+
+            <!-- Input type checkbox -->
+            <hr>
+            <div class="form-group choice-option">
+                <div>
+                    <div class="form-check">
+                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
+                        <label class="form-check-label required" for="">required</label>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
+                </div>
+            </div>
+            `;
+            document.querySelector(".main-container").appendChild(element);
+            editQuestion()
+            editRequire()
+            deleteQuestion()
+        })
+    })
+
 })

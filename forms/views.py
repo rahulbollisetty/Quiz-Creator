@@ -14,16 +14,8 @@ def create(request):
         data = json.loads(request.body)
         title = data["title"]
         exam_id = str(uuid.uuid4()).replace('-','')[0:30]
-        # choices = Options(optn = "Option 1")
-        # choices.save()
-        # quest = Question(q_type= "multiple choice", ques= "Untitled Question", req= False)
-        # quest.save()
-        # quest.options.add(choices)
-        # quest.save()
         form = Exam(uuid= exam_id, title= title, owner= request.user)
         form.save()
-        # form.questions.add(quest)
-        # form.save()
         return JsonResponse({"message": "Sucess", "code": exam_id})
 
 def edit_form(request,id):
@@ -77,15 +69,16 @@ def add_question(request,id):
     if form.owner != request.user:
         return HttpResponse("You are not authorised to access this form")
     if request.method == "POST":
+        data = json.loads(request.body)
         choices = Options(optn = "Option 1")
         choices.save()
-        question = Question(q_type="mcq", ques="Untitled Question", req=False)
+        question = Question(q_type=data["type"], ques="Untitled Question", req=False)
         question.save()
         question.options.add(choices)
         question.save()
         form.questions.add(question)
         form.save()
-        return JsonResponse({'question': {'ques': "Untitled Question", 'q_type': "mcq", 'req': False, 'id': question.id},
+        return JsonResponse({'question': {'ques': "Untitled Question", 'q_type': question.q_type, 'req': False, 'id': question.id},
         'choices': {'optn': "Option 1", 'is_correct': False, 'id': choices.id}})
 
 def edit_choice(request,id):
