@@ -1,4 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
+
+    import "https://cdn.jsdelivr.net/npm/ipfs@0.55.4/dist/index.min.js";
+document.addEventListener("DOMContentLoaded", async () => {
+    const node = await Ipfs.create({
+        EXPERIMENTAL:{
+            pubsub:true
+        }
+    })
 
     document.querySelector("#create-blank-form").addEventListener('click',()=>{
         const csrf = Cookies.get('csrftoken');
@@ -17,43 +24,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener("click", function(){
-            window.open(`${this.dataset.id}/edit`)
+            window.location = `${this.dataset.id}/edit`
         })
     })
 
-    document.querySelectorAll('delete-btn').forEach(btn => {
+    document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener("click", function(){
-            // fetch('delete_form', {
-            //     method: "POST",
-            //     headers: {'X-CSRFToken': csrf},
-            //     body: JSON.stringify({
-            //         "id": this.dataset.id
-            //     })
-            // })
-            console.log(this.dataset.id)
+            fetch('delete_form', {
+                method: "DELETE",
+                headers: {'X-CSRFToken': csrf},
+                body: JSON.stringify({
+                    "id": this.dataset.id
+                })
+            })
+            .then(() => {
+                this.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode.parentNode.parentNode)
+                
+            })
+
         })
     })
-
+    document.querySelector('#example')
     $(document).ready(function() {
-        // Setup - add a text input to each footer cell
-        $('#example thead tr').clone(true).appendTo( '#example thead' );
-        $('#example thead tr:eq(1) th').each( function (i) {
-            var title = $(this).text();
-            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-     
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            } );
-        } );
-     
         var table = $('#example').DataTable( {
-            orderCellsTop: true,
-            fixedHeader: true
+            fixedHeader: {
+                header: true,
+                footer: true
+            }
         } );
     } );
 })

@@ -1,7 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
+
+document.addEventListener("DOMContentLoaded", async () => {
+
     const csrf = Cookies.get('csrftoken');
     document.querySelector("#create-blank-form").addEventListener('click',()=>{
-        const csrf = Cookies.get('csrftoken');
             fetch('/create', {
                 method: "POST",
                 headers: {'X-CSRFToken': csrf},
@@ -37,27 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         })
     })
-
+    document.querySelector('#example')
     $(document).ready(function() {
-        // Setup - add a text input to each footer cell
-        $('#example thead tr').clone(true).appendTo( '#example thead' );
-        $('#example thead tr:eq(1) th').each( function (i) {
-            var title = $(this).text();
-            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-     
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            } );
-        } );
-     
         var table = $('#example').DataTable( {
-            orderCellsTop: true,
-            fixedHeader: true
+            fixedHeader: {
+                header: true,
+                footer: true
+            }
         } );
     } );
 })

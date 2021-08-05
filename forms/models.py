@@ -34,5 +34,5 @@ class Responses(models.Model):
     response_to = models.ForeignKey(Exam, on_delete = models.CASCADE, related_name = "response_to")
     responder_ip = models.CharField(max_length=30)
     responder = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "responder", blank = True, null = True)
-    responder_email = models.EmailField(blank = True)
+    responder_email = models.EmailField(blank = True,null=True)
     response = models.ManyToManyField(Ans, related_name = "response")

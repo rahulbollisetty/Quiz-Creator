@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'acc.apps.AccConfig',
     'forms.apps.FormsConfig',
     'crispy_forms',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

@@ -5,6 +5,8 @@ urlpatterns=[
     path('form',views.index,name="form"),
     path('create',views.create,name='create_form'),
     path('delete_form',views.delete_form,name='delete_form'),
+    path('<str:id>/view_exam',views.view_exam,name='view_exam'),
+    path('<str:id>/submit_exam',views.submit_exam,name='submit_exam'),
     path('<str:id>/edit', views.edit_form, name="edit_form"),
     path('<str:id>/form_publish', views.form_publish, name="form_publish"),
     path('<str:id>/edit_title', views.edit_title, name="edit_title"),
@@ -15,6 +17,7 @@ urlpatterns=[
     path('<str:id>/remove_choice', views.remove_choice, name="remove_choice"),
     path('<str:id>/edit_question', views.edit_question, name="edit_question"),
     path('<str:id>/delete_question/<str:q_id>', views.delete_question, name="delete_question"),
+    path('video',views.video,name='video'),
 
 
 ]

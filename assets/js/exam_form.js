@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {'X-CSRFToken': csrf},
             body: JSON.stringify({})
         })
+        .then(()=>{
+            window.location = '/form'
+        })
     })
 
     const editQuestion = () => {

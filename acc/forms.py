@@ -22,7 +22,7 @@ class ProfileForm(ModelForm):
 		model = Profile
 		fields = ('name','phone','email','pincode','state','city')
 		widgets = {
-            'name': TextInput(attrs={'placeholder' : 'Enter Your Name','maxlength':25}),
+            		'name': TextInput(attrs={'placeholder' : 'Enter Your Name','maxlength':25}),
 			'phone' : TextInput(attrs={'placeholder':'Enter Your Phone Number','maxlength':10}),
 			'email' : EmailInput(attrs={'placeholder' : 'Enter Your Email'}),
 			'pincode' : TextInput(attrs={'placeholder' : 'Enter Pincode','maxlength':6}),

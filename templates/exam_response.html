@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block script %}
+<script src="{% static 'js/view_exam.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="margin-top-bottom box box-shadow bg-white">
+        <h1 class="form-title txtClr">{{form.title}}</h1>
+        <div class="modal-division">
+            <a href="#" class="btn view-score-btn">View Response</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
