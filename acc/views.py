@@ -23,6 +23,7 @@ def register(request):
             user.set_password(password)
             user.save()
             login(request,user)
+            messages.success(request,'Username registered')
             return redirect('form')
 
         messages.error(request,'Username Exists')
@@ -47,15 +48,3 @@ def logout_request(request):
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
 	return redirect("login")
-
-def profile_edit(request):
-    if request.method == "POST":
-        form = ProfileForm(request.POST,instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request,'Your have successfully updated your Profile')
-            return redirect('home')
-    data = Profile.objects.get(user_id=request.user.id)
-    data_json = {'name':data.name,'phone':data.phone,'email':data.email,'pincode':data.pincode,'city':data.city,'state':data.state}
-    form = ProfileForm(initial=data_json)
-    return render(request,'profile_edit.html',context={"profile_form":form})
