@@ -26,6 +26,7 @@ def register(request):
             user.set_password(password)
             user.save()
             login(request,user)
+            messages.success(request,'Username registered')
             return redirect('form')
 
         messages.error(request,'Username Exists')
