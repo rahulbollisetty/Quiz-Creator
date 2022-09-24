@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
     document.querySelectorAll(".textarea-adjust").forEach(tx => {
         tx.style.height = "auto";
         tx.style.height = (10 + tx.scrollHeight)+"px";

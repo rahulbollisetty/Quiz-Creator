@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 })
                 .then( () => {
-                    this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)
+                    this.parentNode.parentNode.removeChild(this.parentNode)
                 })
             })
         })
@@ -147,36 +147,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const addOption = () => {
         document.querySelectorAll(".add-option").forEach(question =>{
             question.addEventListener("click", function(){
+                let question_id = this.dataset.question
                 fetch('add_choice',{
                     method: "POST",
                     headers: {'X-CSRFToken': csrf},
                     body: JSON.stringify({
-                        "question": this.dataset.question
+                        "question": question_id
                     }) 
                 })
                 .then(response => response.json())
                 .then(result => {
                     let element = document.createElement('div')
-                    element.classList.add('choice')
+                    element.classList.add("form-check" ,"justify-content-between" ,"d-flex")
+                    element.setAttribute('data-id',question_id)
                     if(this.dataset.type === "mcq"){
                         element.innerHTML = `
-                        <div class="form-check">
-                        <input class="form-check-input" type="radio" id="${result["id"]}" disabled>
-                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choice"]}" data-id="${result["id"]}"><span class="remove-option" title = "Remove" data-id="${result["id"]}">&times;</span>
-                        </div>
+                        <input class="form-check-input flex-fill" id="${result["id"]}" disabled type="radio" >
+                        <input class="form-control mx-2 edit-choice" value="${result["choice"]}" data-id="${result["id"]}">
+                        <span class="remove-option" title = "Remove" data-id="${result["id"]}"><i class="fa-solid fa-xmark"></i></span>
                         `;
                     }
                     else if(this.dataset.type === 'msq'){
                         element.innerHTML = `
-                        <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="${result["id"]}" disabled>
-                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choice"]}" data-id="${result["id"]}"><span class="remove-option" title = "Remove" data-id="${result["id"]}">&times;</span>
-                        </div>
+                        <input class="form-check-input flex-fill" id="${result["id"]}" disabled type="checkbox" >
+                        <input class="form-control mx-2 edit-choice" value="${result["choice"]}" data-id="${result["id"]}">
+                        <span class="remove-option" title = "Remove" data-id="${result["id"]}"><i class="fa-solid fa-xmark"></i></span>
                         `;
                     }
                     document.querySelectorAll(".choices").forEach(choices => {
                         if(choices.dataset.id === this.dataset.question){
                             choices.insertBefore(element, choices.childNodes[choices.childNodes.length -2]);
+                            console.log(choices.childNodes.length);
                             editOption()
                             removeOption()
                         }
@@ -198,47 +199,44 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(result => {
             let element = document.createElement('div')
-            element.classList.add('margin-top-bottom')
-            element.classList.add('box')
-            element.classList.add('question-box')
-            element.classList.add('question')
+            element.classList.add('card', 'shadow', 'mb-3', 'question')
+            let len = document.querySelector(".main-container .col").childNodes.length
             element.setAttribute("data-id", result["question"].id)
             element.innerHTML = `
-            <!-- Input type text -->
-            <div class="form-group">
-                <label>Question</label>
-                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
-            </div>
-            
-            <!-- Input type radio -->
-            <div class="form-group choices" data-id="${result["question"].id}">
-                <label>Options</label>
-                <!-- for loop -->
-                <div class="choice">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="${result["choices"].id}" disabled>
-                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}"><span class="remove-option" title = "Remove" data-id="${result["choices"].id}">&times;</span>
-                    </div>
-                </div>
-                <!-- end for loop -->
-            </div>
-            <button type="button" class="btn btn-outline-dark btn-sm add-option" data-question="${result["question"].id}" data-type="${result["question"].q_type}">Add Option</button>
-            <!-- Input type checkbox -->
-            <hr>
-            <div class="form-group choice-option">
-                <div>
-                    <div class="form-check">
-                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
-                        <label class="form-check-label required" for="">required</label>
-                    </div>
-                </div>
-                <div class="float-right">
-                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
-                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
-                </div>
-            </div>
+                            <div class="card-header py-3">
+                                <p class="text-primary m-0 fw-bold">Question MCQ</p>
+                            </div>
+                            <div class="card-body">
+                                    <div class="row">
+                                        <div class="mb-3"><label class="form-label" for=""><strong>Question</strong></label>
+                                            <input class="form-control question-title input-question" data-id="${result["question"].id}" data-type="${result["question"].q_type}" 
+                                            type="text" name="Question" value="${result["question"].ques}" placeholder="Question"></div>
+                                            </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 choices" data-id="${result["question"].id}">
+                                                <label class="form-label" for=""><strong>Options</strong><br></label>
+
+                                                <div class="form-check justify-content-between d-flex" data-id="${result["question"].id}">
+                                                    <input class="form-check-input" id="${result["choices"].id}" disabled type="radio" >
+                                                    <input class="form-control mx-2 edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}">
+                                                    <span class="remove-option" title = "Remove" data-id="${result["choices"].id}"><i class="fa-solid fa-xmark"></i></span>
+                                                </div>
+                                                <button class="btn m-1 btn-outline-dark btn-sm add-option" type="button" data-question="${result["question"].id}" data-type="${result["question"].q_type}" style="width: 30px;height: 31px;padding: 6px 12px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;"><Strong>+</Strong></button></div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="d-flex justify-content-between card-footer">
+                                <div class="form-check">
+                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    data-id="${result["question"].id}" 
+                                    type="checkbox" >
+                                    <label class="form-check-label required">Required</label>
+                                </div>
+                                <i class="fa-solid fa-trash delete-question" data-id="${result["question"].id}"></i>
+                            </div>
             `;
-            document.querySelector(".main-container").appendChild(element);
+            document.querySelector(".main-container .col").appendChild(element);
             editOption()
             removeOption()
             addOption()
@@ -259,47 +257,43 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(result => {
             let element = document.createElement('div')
-            element.classList.add('margin-top-bottom')
-            element.classList.add('box')
-            element.classList.add('question-box')
-            element.classList.add('question')
+            element.classList.add('card', 'shadow', 'mb-3', 'question')
+            let len = document.querySelector(".main-container .col").childNodes.length
             element.setAttribute("data-id", result["question"].id)
             element.innerHTML = `
-            <!-- Input type text -->
-            <div class="form-group">
-                <label>Question</label>
-                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
-            </div>
-            
-            <!-- Input type radio -->
-            <div class="form-group choices" data-id="${result["question"].id}">
-                <label>Options</label>
-                <!-- for loop -->
-                <div class="choice">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="${result["choices"].id}" disabled>
-                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}"><span class="remove-option" title = "Remove" data-id="${result["choices"].id}">&times;</span>
-                    </div>
-                </div>
-                <!-- end for loop -->
-            </div>
-            <button type="button" class="btn btn-outline-dark btn-sm add-option" data-question="${result["question"].id}" data-type="${result["question"].q_type}">Add Option</button>
-            <!-- Input type checkbox -->
-            <hr>
-            <div class="form-group choice-option">
-                <div>
-                    <div class="form-check">
-                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
-                        <label class="form-check-label required" for="">required</label>
-                    </div>
-                </div>
-                <div class="float-right">
-                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
-                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
-                </div>
-            </div>
+                            <div class="card-header py-3">
+                                <p class="text-primary m-0 fw-bold">Question MSQ</p>
+                            </div>
+                            <div class="card-body">
+                                    <div class="row">
+                                        <div class="mb-3"><label class="form-label" for=""><strong>Question</strong></label>
+                                            <input class="form-control question-title input-question" data-id="${result["question"].id}" data-type="${result["question"].q_type}" 
+                                            type="text" name="Question" value="${result["question"].ques}" placeholder="Question"></div>
+                                            </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 choices" data-id="${result["question"].id}">
+                                                <label class="form-label" for=""><strong>Options</strong><br></label>
+                                                <div class="form-check justify-content-between d-flex" data-id="${result["question"].id}">
+                                                    <input class="form-check-input" id="${result["choices"].id}" disabled type="radio" >
+                                                    <input class="form-control mx-2 edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}">
+                                                    <span class="remove-option" title = "Remove" data-id="${result["choices"].id}"><i class="fa-solid fa-xmark"></i></span>
+                                                </div>
+                                                <button class="btn m-1 btn-outline-dark btn-sm add-option" type="button" data-question="${result["question"].id}" data-type="${result["question"].q_type}" style="width: 30px;height: 31px;padding: 6px 12px;padding-left: 10px;padding-right: 10px;padding-top: 4px;padding-bottom: 4px;"><Strong>+</Strong></button></div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="d-flex justify-content-between card-footer">
+                                <div class="form-check">
+                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    data-id="${result["question"].id}" 
+                                     type="checkbox" >
+                                    <label class="form-check-label required">Required</label>
+                                </div>
+                                <i class="fa-solid fa-trash delete-question" data-id="${result["question"].id}"></i>
+                            </div>
             `;
-            document.querySelector(".main-container").appendChild(element);
+            document.querySelector(".main-container .col").appendChild(element);
             editOption()
             removeOption()
             addOption()
@@ -320,40 +314,40 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(result => {
             let element = document.createElement('div')
-            element.classList.add('margin-top-bottom')
-            element.classList.add('box')
-            element.classList.add('question-box')
-            element.classList.add('question')
+            element.classList.add('card', 'shadow', 'mb-3', 'question')
+            let len = document.querySelector(".main-container .col").childNodes.length
             element.setAttribute("data-id", result["question"].id)
             element.innerHTML = `
-            <!-- Input type text -->
-            <div class="form-group">
-                <label>Question</label>
-                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
-            </div>
-            
-            <!-- Input type Short Answer -->
-            <div class="form-group answer" data-id="${result["question"].id}">
-                <label>Answer</label>
-                <input type="text" class="form-control short-answer" disabled placeholder="Short answer text">
-            </div>
-
-            <!-- Input type checkbox -->
-            <hr>
-            <div class="form-group choice-option">
-                <div>
-                    <div class="form-check">
-                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
-                        <label class="form-check-label required" for="">required</label>
-                    </div>
-                </div>
-                <div class="float-right">
-                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
-                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
-                </div>
-            </div>
+                            <div class="card-header py-3">
+                                <p class="text-primary m-0 fw-bold">Question Short Answer</p>
+                            </div>
+                            <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                        <div class="mb-3"><label class="form-label" for=""><strong>Question</strong></label>
+                                        <input class="form-control question-title input-question" data-id="${result["question"].id}" data-type="${result["question"].q_type}" 
+                                        type="text" name="Question" value="${result["question"].ques}" placeholder="Question"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 answer" data-id="${result["question"].id}">
+                                            <label class="form-label"><strong>Answer</strong><br></label>
+                                            <input class="form-control short-answer" disabled type="text" placeholder="Short Answer" ></div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="d-flex justify-content-between card-footer">
+                                <div class="form-check">
+                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    data-id="${result["question"].id}" 
+                                     type="checkbox" >
+                                    <label class="form-check-label required">Required</label>
+                                </div>
+                                <i class="fa-solid fa-trash delete-question" data-id="${result["question"].id}"></i>
+                            </div>
             `;
-            document.querySelector(".main-container").appendChild(element);
+            document.querySelector(".main-container .col").appendChild(element);
             editQuestion()
             editRequire()
             deleteQuestion()
@@ -372,40 +366,41 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(result => {
             let element = document.createElement('div')
-            element.classList.add('margin-top-bottom')
-            element.classList.add('box')
-            element.classList.add('question-box')
-            element.classList.add('question')
+            element.classList.add('card', 'shadow', 'mb-3', 'question')
+            let len = document.querySelector(".main-container .col col").childNodes.length
             element.setAttribute("data-id", result["question"].id)
             element.innerHTML = `
-            <!-- Input type text -->
-            <div class="form-group">
-                <label>Question</label>
-                <input type="text" data-id="${result["question"].id}" data-type="${result["question"].q_type}" class="form-control question-title edit-on-click input-question" value="${result["question"].ques}">
+            <div class="card-header py-3">
+                <p class="text-primary m-0 fw-bold">Question Long Answer</p>
             </div>
-            
-            <!-- Input type Long Answer -->
-            <div class="form-group answer" data-id="${result["question"].id}">
-                <label>Answer</label>
-                <textarea class="form-control long-answer" disabled placeholder="Long answer text"></textarea>
-            </div>
-
-            <!-- Input type checkbox -->
-            <hr>
-            <div class="form-group choice-option">
-                <div>
-                    <div class="form-check">
-                        <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" data-id="${result["question"].id}" {% if question.req %}checked{% endif %}>
-                        <label class="form-check-label required" for="">required</label>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3"><label class="form-label" for=""><strong>Question</strong></label>
+                            <input class="form-control question-title input-question" data-id="${result["question"].id}" data-type="${result["question"].q_type}" 
+                            type="text" name="Question" value="${result["question"].ques}" placeholder="Question"></div>
+                            </div>
                     </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3 answer" data-id="${result["question"].id}">
+                                <label class="form-label" for="">
+                                <strong>Answer</strong><br></label>
+                                <textarea class="form-control long-answer" disabled placeholder="Long Answer"></textarea></div>
+                        </div>
+                    </div>
+            </div>
+            <div class="d-flex justify-content-between card-footer">
+                <div class="form-check">
+                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                    data-id="${result["question"].id}" 
+                    type="checkbox" >
+                    <label class="form-check-label required">Required</label>
                 </div>
-                <div class="float-right">
-                    <img src="/static/Icon/dustbin.png" alt="Delete question icon"
-                    class="question-option-icon delete-question" title="Delete question" data-id="${result["question"].id}">
-                </div>
+                <i class="fa-solid fa-trash delete-question" data-id="${result["question"].id}"></i>
             </div>
             `;
-            document.querySelector(".main-container").appendChild(element);
+            document.querySelector(".main-container .col").appendChild(element);
             editQuestion()
             editRequire()
             deleteQuestion()

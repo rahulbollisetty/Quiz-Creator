@@ -8,6 +8,7 @@ import random
 import string
 import uuid
 import cv2
+
 # Create your views here.
 def index(request):
     form = Exam.objects.filter(owner=request.user.id)
@@ -53,7 +54,6 @@ def form_publish(request,id):
         return JsonResponse({"message" : "Success"})
 
 def delete_form(request):
-    print("hi")
     if request.method == "DELETE":
         data = json.loads(request.body)
         form = Exam.objects.filter(uuid=data["id"])
@@ -271,7 +271,7 @@ def submit_exam(request,id):
 
 
 def generate_frames():
-    camera=cv2.VideoCapture(-1)
+    camera = cv2.VideoCapture('http://127.0.0.1:8000')
     while True:
             
         ## read the camera frame

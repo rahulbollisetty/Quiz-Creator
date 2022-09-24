@@ -7,14 +7,13 @@ from django.http import request
 from django.conf import settings
 from django.contrib.auth.models import User
 
-
 # Create your forms here.
 
 class NewUserForm(UserCreationForm):
-	
+	email = forms.EmailField()
 	class Meta:
 		model = User
-		fields = ("username", "password1", "password2")
+		fields = ("username", "email","password1", "password2")
  
 
 class ProfileForm(ModelForm):
@@ -22,7 +21,7 @@ class ProfileForm(ModelForm):
 		model = Profile
 		fields = ('name','phone','email','pincode','state','city')
 		widgets = {
-            		'name': TextInput(attrs={'placeholder' : 'Enter Your Name','maxlength':25}),
+            'name': TextInput(attrs={'placeholder' : 'Enter Your Name','maxlength':25}),
 			'phone' : TextInput(attrs={'placeholder':'Enter Your Phone Number','maxlength':10}),
 			'email' : EmailInput(attrs={'placeholder' : 'Enter Your Email'}),
 			'pincode' : TextInput(attrs={'placeholder' : 'Enter Pincode','maxlength':6}),

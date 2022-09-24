@@ -6,47 +6,50 @@ from django.contrib.auth.decorators import login_required
 from .forms import NewUserForm,ProfileForm
 from django.contrib import messages
 from .models import Profile
+from django.contrib.auth.models import User
+
 # Create your views here.
 
 def home(request):
-    return render(request,'base.html')
+    return render(request,'index.html')
 def profile(request):
     return render(request,'profile.html',)
 def register(request):
     if request.method == 'POST':
-        form = NewUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            print(user)
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password  = request.POST.get('password')
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            user = User.objects.create(username=username,email=email)
+            user.set_password(password)
+            user.save()
             login(request,user)
-            messages.success(request,"Registration successful.")
-            return redirect('home')
-        messages.error(request,"Unsuccessful registration.Invalid Information")
-    form =NewUserForm
-    return render(request,'register.html',context={"register_form":form})
+            return redirect('form')
+
+        messages.error(request,'Username Exists')
+    return render(request,'register.html')
 
 def login_request(request):
     if request.method == "POST":
-        form = AuthenticationForm(request,data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username,password=password)
-            if user is not None:
-                login(request,user)
-                messages.info(request,f"You are now logged in as {username}")
-                return redirect('home')
-            else:
-                messages.error(request,'Invalid username or password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username,password=password)
+        print(user)
+        if user is not None:
+            login(request,user)
+            messages.info(request,f"You are now logged in as {username}")
+            return redirect('form')
         else:
             messages.error(request,'Invalid username or password')
-    form = AuthenticationForm()
-    return render(request,'login.html',context={"login_form":form}) 
+
+    return render(request,'login.html') 
         
 def logout_request(request):
 	logout(request)
 	messages.info(request, "You have successfully logged out.") 
-	return redirect("home")
+	return redirect("login")
 
 def profile_edit(request):
     if request.method == "POST":

@@ -1,19 +1,70 @@
-{% extends "base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html>
 
-{% block content %} 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Register - Brand</title>
+    <link rel="stylesheet" href="{%static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="{% static '/css/styles.min.css' %}">
+</head>
 
-{% load crispy_forms_tags %}         
+<body class="bg-gradient-primary">
+    {% include 'messages.html' %}
 
-<!--Register--> 
-<div class="container py-5">
-	<h1 style="display: inline;">Register</h1>
-	<form method="POST">
-		{% csrf_token %}
-		{{ register_form|crispy }}                    
-		<button class="btn btn-primary" type="submit">Register</button>
-	</form>
-	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+    <div class="container">
+        <div class="card shadow-lg o-hidden border-0 my-5">
+            <div class="card-body p-0">
+                <div class="row">
+    
+                    <div class="col-lg">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h4 class="text-dark mb-4">Create an Account!</h4>
+                            </div>
+                            <form class="user" method="post" action="{% url 'register' %}">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+                                    <div class="col-sm mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="username" placeholder="User Name" name="username"></div>
+                                </div>
+                                <div class="mb-3"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address" name="email"></div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <input class="form-control form-control-user" type="password" id="password" 
+                                    placeholder="Password" name="password" onkeyup="check()"></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" 
+                                        type="password" id="confirm_password" placeholder="Confirm Password" 
+                                        name="confirm_password" onkeyup="check()"></div>
+                                </div>
+								<button class="btn btn-primary d-block btn-user w-100" id="reg" disabled type="submit">Register Account</button>
+                                <hr>
+                                <div class="text-center"><a class="small" href="{% url 'login' %}">Have an Account, Login</a></div>
 
-</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/script.min.js' %}"></script>
+    <script src="{% static 'js/active.js' %}"></script>
 
-{% endblock %}
+    <script>
+        var check = function() {
+            if ((document.getElementById('password').value ==
+              document.getElementById('confirm_password').value)&& 
+              document.getElementById('password').value !="") {
+              document.getElementById('reg').disabled = false;
+            } else{
+                document.getElementById('reg').disabled = true;
+
+            }
+          }
+    </script>
+</body>
+
+</html>

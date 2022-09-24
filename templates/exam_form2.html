@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}
+{{form.title}}
+{% endblock %}
+{% load static %}
+{% block script %}
+<script src = "{% static 'js/exam_form.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/form_style.css' %}">
+{% endblock %}
+{% block content %}
+<nav class="navbar navbar-light blue-grey lighten-5 sticky-top">
+    <div class="div-inline">
+      <button class="btn btn-outline-success" id="add-mcq" type="button">Add MCQ</button>
+      <button class="btn btn-outline-success" id="add-msq" type="button">Add MSQ</button>
+      <button class="btn btn-outline-success" id="add-sa" type="button">Add Short Answer</button>
+      <button class="btn btn-outline-success" id="add-la" type="button">Add Long Answer</button>
+    </div>
+    <div class="form-navigation right">
+        <span class="col-6 navigation active"><a href="{% url 'edit_form' form.uuid %}"></a> Questions</span>
+        <span class="col-6 navigation"><a href = "#" class="link">Responses</a></span>
+        <span class="col-6 navigation"><a href = "#" class="link">Score</a></span>
+    </div>
+    <button type="button" class="btn btn-primary publish" data-id="{{form.code}}">Publish</button>
+
+</nav>
+<div class="margin-top-bottom box question-box" id="form-head">
+        <!-- Input type text -->
+        <div class="form-group">
+            <label for="input_id_2">Title</label>
+            <input type="text" class="form-control" id="input-form-title" placeholder="Title" value="{{form.title}}">
+        </div>
+         <!-- textarea -->
+        <div class="form-group">
+            <label for="textarea_id_3">Description</label>
+            <textarea class="form-control options-text textarea-adjust" rows="2" id="input-form-description" spellcheck="false">{{form.desc}}</textarea>
+        </div>
+</div>
+<div class="main-container">
+    {% for question in form.questions.all %}
+    {% if question.q_type == "mcq" %}
+    <!-- MCQ BASED QUESTION -->
+    <div class="margin-top-bottom box question-box question" data-id="{{question.id}}">
+        <!-- Input type text -->
+        <div class="form-group">
+            <label>Question</label>
+            <input type="text" data-id="{{question.id}}" data-type="{{question.q_type}}" 
+            class="form-control question-title edit-on-click input-question" value="{{question.ques}}">
+        </div>
+        <!-- Input type radio -->
+        <div class="form-group choices" data-id="{{question.id}}">
+            <label>Options</label>
+            <!-- for loop -->
+            {%for choice in question.options.all %}
+            <div class="choice">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="{{choice.id}}" disabled >
+                    <input type="text" style="height: calc(.5em + .75rem + 2px);" 
+                    class="form-control edit-choice" 
+                    value="{{choice.optn}}" data-id="{{choice.id}}">
+                    <span class="remove-option" title = "Remove" data-id="{{choice.id}}">&times;</span>
+                </div>
+            </div>
+            <!-- end for loop -->
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-outline-dark btn-sm add-option" 
+        data-question="{{question.id}}" data-type="{{question.q_type}}">Add Option</button>
+        <!-- Input type checkbox -->
+        <hr>
+        <div class="form-group choice-option">
+            <div>
+                <div class="form-check">
+                    <input class="form-check-input required-checkbox" type="checkbox" id="required-{{question.id}}" data-id="{{question.id}}" {% if question.req %}checked{% endif %}>
+                    <label class="form-check-label required" for="">required</label>
+                </div>
+            </div>
+            <div class="float-right">
+                <img src="{% static 'Icon/dustbin.png' %}" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="{{question.id}}">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if question.q_type == "msq" %}
+        <!-- MSQ BASED QUESTION -->
+        <div class="margin-top-bottom box question-box question" data-id="{{question.id}}">
+            <!-- Input type text -->
+            <div class="form-group">
+                <label>Question</label>
+                <input type="text" data-id="{{question.id}}" data-type="{{question.q_type}}" class="form-control question-title edit-on-click input-question" value="{{question.ques}}">
+            </div>
+            <!-- Input type checkbox -->
+            <div class="form-group choices" data-id="{{question.id}}">
+                <label>Options</label>
+                <!-- for loop -->
+                {%for choice in question.options.all %}
+                <div class="choice">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="{{choice.id}}" disabled >
+                        <input type="text" style="height: calc(.5em + .75rem + 2px);" class="form-control edit-choice" value="{{choice.optn}}" 
+                        data-id="{{choice.id}}">
+                        <span class="remove-option" title = "Remove" data-id="{{choice.id}}">&times;</span>
+                    </div>
+                </div>
+                <!-- end for loop -->
+                {% endfor %}
+            </div>
+            <button type="button" class="btn btn-outline-dark btn-sm add-option" data-question="{{question.id}}" data-type="{{question.q_type}}">Add Option</button>
+            <!-- Input type checkbox -->
+            <hr>
+            <div class="form-group choice-option">
+                <div>
+                    <div class="form-check">
+                        <input class="form-check-input required-checkbox" type="checkbox" 
+                        id="required-{{question.id}}" data-id="{{question.id}}" {% if question.req %}checked{% endif %}>
+                        <label class="form-check-label required" for="">required</label>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <img src="{% static 'Icon/dustbin.png' %}" alt="Delete question icon"
+                        class="question-option-icon delete-question" title="Delete question" data-id="{{question.id}}">
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if question.q_type == "sa" %}
+    <!-- SHORT ANSWER BASED QUESTION -->
+    <div class="margin-top-bottom box question-box question" data-id="{{question.id}}">
+        <!-- Input type text -->
+        <div class="form-group">
+            <label>Question</label>
+            <input type="text" data-id="{{question.id}}" data-type="{{question.q_type}}" 
+            class="form-control question-title edit-on-click input-question" value="{{question.ques}}">
+        </div>
+        <!-- Input type Short Answer -->
+        <div class="form-group answer" data-id="{{question.id}}">
+            <label>Answer</label>
+            <input type="text" class="form-control short-answer" disabled placeholder="Short answer text">
+        </div>
+        <!-- Input type checkbox -->
+        <hr>
+        <div class="form-group choice-option">
+            <div>
+                <div class="form-check">
+                    <input class="form-check-input required-checkbox" type="checkbox" id="required-{{question.id}}" data-id="{{question.id}}" 
+                    {% if question.req %}checked{% endif %}>
+                    <label class="form-check-label required" for="">required</label>
+                </div>
+            </div>
+            <div class="float-right">
+                <img src="{% static 'Icon/dustbin.png' %}" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="{{question.id}}">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if question.q_type == "la" %}
+    <!-- Long ANSWER BASED QUESTION -->
+    <div class="margin-top-bottom box question-box question" data-id="{{question.id}}">
+        <!-- Input type text -->
+        <div class="form-group">
+            <label>Question</label>
+            <input type="text" data-id="{{question.id}}" data-type="{{question.q_type}}" class="form-control question-title edit-on-click input-question" value="{{question.ques}}">
+        </div>
+        <!-- Input type Long Answer -->
+        <div class="form-group answer" data-id="{{question.id}}">
+            <label>Answer</label>
+            <textarea class="form-control long-answer" disabled placeholder="Long answer text"></textarea>
+        </div>
+        <!-- Input type checkbox -->
+        <hr>
+        <div class="form-group choice-option">
+            <div>
+                <div class="form-check">
+                    <input class="form-check-input required-checkbox" type="checkbox" id="required-{{question.id}}" data-id="{{question.id}}" {% if question.req %}checked{% endif %}>
+                    <label class="form-check-label required" for="">required</label>
+                </div>
+            </div>
+            <div class="float-right">
+                <img src="{% static 'Icon/dustbin.png' %}" alt="Delete question icon"
+                    class="question-option-icon delete-question" title="Delete question" data-id="{{question.id}}">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}

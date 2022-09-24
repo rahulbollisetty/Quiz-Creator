@@ -1,52 +1,146 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}{{form.title}}{% endblock %}
-{% block script %}
-<script src="{% static 'js/view_exam.js' %}" defer></script>
-<link rel="stylesheet" href="{% static 'css/form_style.css' %}">
-{% endblock %}
-{% block content %}
-<div class="container-fluid">
-    <form action="{% url 'submit_exam' form.uuid %}" class="container" method="POST" autocomplete="off">
-        {% csrf_token %}
-        <div class="margin-top-bottom box question-box">
-            <div class="form-title-box">
-                <h1 class="form-title txtClr">{{form.title}}</h1>
-                <p class="required-info">* Required</p>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>
+        {{form.title}} 
+    </title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+    <script src="https://kit.fontawesome.com/bc6e988caa.js" crossorigin="anonymous"></script>
+    <script src = "{% static 'js/exam_form.js' %}"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
+   
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                
+                <div class="container-fluid justify-content-between" style="margin-bottom: 16px; margin-top:30px;">
+                    <div class="card shadow mb-3">
+                        <div class="card-body">
+                                <div class="row">
+                                    <h2 class="form-title">{{form.title}}</h2>
+                                </div>
+                                <div class="row">
+                                    <p>{{form.desc}}</p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-description txtClr">{{form.desc}}</div>
-        </div>
-        {% for question in form.questions.all %}
-        <div class="margin-top-bottom box question-box">
-            <h1 class="question-title txtClr">{{question.ques}} {% if question.req %}<span class="require-star">*</span>{% endif %}</h1>
-            {% if question.q_type == "sa" %}
-                <input type="text" name="{{question.id}}" class="short-answer textarea-adjust" placeholder = "Your answer" {% if question.req %} required {% endif %}>
-                {% elif question.q_type == "la" %}
-                <textarea name="{{question.id}}" placeholder="Your answer" class="long-answer textarea-adjust" {% if question.req %} required {% endif %}></textarea>
-                {% elif question.q_type == "mcq" %}
-                {% for choice in question.options.all %}
-                <div class="multiple-choice">
-                    <input type="radio" name="{{question.id}}" id="{{choice.id}}" {% if question.req %} required {% endif %} value="{{choice.id}}">
-                    <label for="{{choice.id}}" class="txtClr">{{choice.optn}}</label>
-                </div>
-                {% endfor %}
-            {% elif question.q_type == "msq" %}
-                {% for choice in question.options.all %}
-                <div class="multiple-choice">
-                    <input type="checkbox" name="{{question.id}}" id="{{choice.id}}" {% if question.req %} required {% endif %} value="{{choice.id}}">
-                    <label for="{{choice.id}}" class="txtClr">{{choice.optn}}</label>
-                </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-        {% endfor %}
-        
+            <div class="container-fluid">
+                <form action="{% url 'submit_exam' form.uuid %}" method="POST" autocomplete="off">
 
-        <div class="text-center">
-            <input type="submit" value="Submit">
-          </div>
-    </form>
-    <img src="{% url 'video' %}" width="50%">
+                <div class="row main-container">
+                    <div class="col">
+                        {% for question in form.questions.all %}
+                        <div class="card shadow mb-3 question" data-id="{{question.id}}">
+                            <div class="card-header py-3">
+                                <p class="text-primary m-0 fw-bold">Question 
+                                    {% if question.q_type == "sa" %}
+                                    Short Answer
+                                    {% elif question.q_type == "la" %}
+                                    Long Answer
+                                    {% elif question.q_type == "mcq" %}
+                                    MCQ
+                                    {% elif question.q_type == "msq" %}
+                                    MSQ
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5 class="text-dark">{{question.ques}}</h3>
+                                        </div>
+                                    </div>
+                                    {% if question.q_type == "sa" %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 answer" data-id="{{question.id}}">
+                                            <label class="form-label"><strong>Answer</strong><br></label>
+                                            <input class="form-control short-answer" disabled type="text" placeholder="Short Answer" ></div>
+                                        </div>
+                                    </div>
+                                    {% elif question.q_type == "la" %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 answer" data-id="{{question.id}}">
+                                                <label class="form-label" for="">
+                                                <strong>Answer</strong><br></label>
+                                                <textarea class="form-control long-answer" disabled placeholder="Long Answer"></textarea></div>
+                                        </div>
+                                    </div>
+                                    {% elif question.q_type == "mcq" %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 choices" data-id="{{question.id}}">
+                                                <label class="form-label" for=""><strong>Options</strong><br></label>
+                                                {%for choice in question.options.all %}
 
-</div>
-{% endblock %}
+                                                <div class="form-check justify-content-between d-flex" data-id="{{question.id}}">
+                                                    <input class="form-check-input" id="{{choice.id}}" disabled type="radio" >
+                                                    <input class="form-control mx-2 edit-choice" value="{{choice.optn}}" data-id="{{choice.id}}">
+                                                    <span class="remove-option" title = "Remove" data-id="{{choice.id}}"><i class="fa-solid fa-xmark"></i></span>
+                                                </div>
+                                                {% endfor %}
+                                        </div>
+                                        </div>
+                                    </div>
+
+                                    {% elif question.q_type == "msq" %}
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="mb-3 choices" data-id="{{question.id}}">
+                                                <label class="form-label" for=""><strong>Options</strong><br></label>
+                                                {%for choice in question.options.all %}
+
+                                                <div class="form-check justify-content-between d-flex" data-id="{{question.id}}">
+                                                    <input class="form-check-input flex-fill" id="{{choice.id}}" disabled type="checkbox" >
+                                                    <input class="form-control mx-2 edit-choice" value="{{choice.optn}}" data-id="{{choice.id}}">
+                                                    <span class="remove-option" title = "Remove" data-id="{{choice.id}}"><i class="fa-solid fa-xmark"></i></span>
+                                                </div>
+                                                {% endfor %}
+                                        </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                            </div>
+                            <div class="d-flex justify-content-between card-footer">
+                                <div class="form-check">
+                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-{{question.id}}" 
+                                    data-id="{{question.id}}" 
+                                    {% if question.req %}checked{% endif %} type="checkbox" >
+                                    <label class="form-check-label required">Required</label>
+                                </div>
+                                <i class="fa-solid fa-trash delete-question" data-id="{{question.id}}"></i>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </form>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © Quizbox 2022</span></div>
+                </div>
+            </footer>
+        </div>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/script.min.js' %}"></script>
+</body>
+
+</html>
