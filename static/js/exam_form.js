@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="d-flex justify-content-between card-footer">
                                 <div class="form-check">
-                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    <input class="form-check-input required-checkbox" id="required-${result["question"].id}" 
                                     data-id="${result["question"].id}" 
                                     type="checkbox" >
                                     <label class="form-check-label required">Required</label>
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <div class="mb-3 choices" data-id="${result["question"].id}">
                                                 <label class="form-label" for=""><strong>Options</strong><br></label>
                                                 <div class="form-check justify-content-between d-flex" data-id="${result["question"].id}">
-                                                    <input class="form-check-input" id="${result["choices"].id}" disabled type="radio" >
+                                                    <input class="form-check-input" id="${result["choices"].id}" disabled type="checkbox" >
                                                     <input class="form-control mx-2 edit-choice" value="${result["choices"].optn}" data-id="${result["choices"].id}">
                                                     <span class="remove-option" title = "Remove" data-id="${result["choices"].id}"><i class="fa-solid fa-xmark"></i></span>
                                                 </div>
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="d-flex justify-content-between card-footer">
                                 <div class="form-check">
-                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    <input class="form-check-input required-checkbox" id="required-${result["question"].id}" 
                                     data-id="${result["question"].id}" 
                                      type="checkbox" >
                                     <label class="form-check-label required">Required</label>
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="d-flex justify-content-between card-footer">
                                 <div class="form-check">
-                                    <input class="form-check-input required-checkbox" type="checkbox" id="required-${result["question"].id}" 
+                                    <input class="form-check-input required-checkbox" id="required-${result["question"].id}" 
                                     data-id="${result["question"].id}" 
                                      type="checkbox" >
                                     <label class="form-check-label required">Required</label>
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(result => {
             let element = document.createElement('div')
             element.classList.add('card', 'shadow', 'mb-3', 'question')
-            let len = document.querySelector(".main-container .col col").childNodes.length
+            let len = document.querySelector(".main-container .col").childNodes.length
             element.setAttribute("data-id", result["question"].id)
             element.innerHTML = `
             <div class="card-header py-3">

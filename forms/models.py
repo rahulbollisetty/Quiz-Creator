@@ -36,3 +36,4 @@ class Responses(models.Model):
     responder = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "responder", blank = True, null = True)
     responder_email = models.EmailField(blank = True,null=True)
     response = models.ManyToManyField(Ans, related_name = "response")
+    submittedAt = models.DateTimeField(auto_now_add=True)

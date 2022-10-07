@@ -14,6 +14,7 @@
 	<link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
     <script src="https://kit.fontawesome.com/bc6e988caa.js" crossorigin="anonymous"></script>
+    <script src = "{% static 'js/exam_form.js' %}"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
 </head>
@@ -59,12 +60,11 @@
                 
                 <div class="container-fluid">
                     <div class="d-flex m-2 justify-content-between"> 
-                        <h3 class="text-dark mb-4">Forms</h3>
-                        <button type="button" class="btn btn-primary" id="create-blank-form" >Create</button>
+                        <h3 class="text-dark mb-4">Responses</h3>
                     </div>
                     <div class="card shadow">
                             <div class="card-header py-3">
-                                <p class="text-primary m-0 fw-bold">Forms Info</p>
+                                <p class="text-primary m-0 fw-bold">Responses Info</p>
                             </div>
                             <div class="card-body">
                                 
@@ -72,47 +72,43 @@
                                     <table class="table my-0" id="dataTable">
                                         <thead>
                                             <tr>
-                                                <th>Title</th>
-                                                <th>Created</th>
-                                                <th>Updated</th>
-                                                <th>Publish Status</th>
+                                                <th>Username</th>
+                                                <th>Submitted At</th>
+                                                <th>Email</th>
+                                                <th>View Response</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for i in form %}
+                                            {% for i in responses %}
 
                                             <tr>
                                                 <td>
-                                                    <div class="d-flex justify-content-around">{{i.title}}
-
-                                                        <button class="btn edit-btn btn-success btn-sm rounded-0" data-id="{{i.uuid}}" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
-                                                        <button class="btn btn-danger delete-btn btn-sm rounded-0" data-id="{{i.uuid}}" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>
+                                                    <div class="d-flex justify-content-around">{{i.responder.username|upper}}
                                                     </div>
                                             </td>
-                                                <td>{{i.createdAt}}</td>
-                                                <td>{{i.updatedAt}}</td>
-                                                <td>{% if i.is_publish %}
-                                                    <a href="{% url 'view_exam' i.uuid %}">View Form</a>
-                                                    {% else %}
-                                                    Not Published
-                                                    {% endif %}</td>
+                                                <td>{{i.submittedAT}}</td>
+                                                <td>{{i.responder_email}}</td>
+                                                <td>
+                                                    <a href="{% url 'response' i.response_to.uuid i.response_code %}">View Form</a></td>
+                                                    
                                             </tr>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th>Title</th>
-                                                <th>Created</th>
-                                                <th>Updated</th>
-                                                <th>Publish Status</th>
+                                                <td><strong>Usename</strong></td>
+                                                <td><strong>SubmittedAt</strong></td>
+                                                <td><strong>Email</strong></td>
+                                                <td><strong>View Response</strong></td>
+                                               
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 align-self-center">
-                                        <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 10 of {{count}} </p>
+                                        <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 10 of 27</p>
                                     </div>
                                     <div class="col-md-6">
                                         <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">

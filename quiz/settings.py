@@ -68,6 +68,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+            'custom_templatetag': 'forms.templatetags.tag_library',
+
+            },
         },
     },
 ]
@@ -117,7 +121,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+LOGIN_URL='login'
 LOGIN_REDIRECT_URL='home'
 LOGOUT_REDIRECT_URL = 'home'
 

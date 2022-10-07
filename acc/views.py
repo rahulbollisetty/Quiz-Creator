@@ -9,9 +9,9 @@ from django.contrib.auth.models import User
 
 def home(request):
     return render(request,'index.html')
-def profile(request):
-    return render(request,'profile.html',)
+
 def register(request):
+
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -22,8 +22,7 @@ def register(request):
             user = User.objects.create(username=username,email=email)
             user.set_password(password)
             user.save()
-            login(request,user)
-            messages.success(request,'Username registered')
+            login(request,user)                
             return redirect('form')
 
         messages.error(request,'Username Exists')
@@ -37,14 +36,10 @@ def login_request(request):
         print(user)
         if user is not None:
             login(request,user)
-            messages.info(request,f"You are now logged in as {username}")
             return redirect('form')
-        else:
-            messages.error(request,'Invalid username or password')
-
+        
     return render(request,'login.html') 
         
 def logout_request(request):
 	logout(request)
-	messages.info(request, "You have successfully logged out.") 
 	return redirect("login")

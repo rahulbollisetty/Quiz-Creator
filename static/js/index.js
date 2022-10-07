@@ -32,20 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 })
             })
             .then(() => {
-                this.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode.parentNode.parentNode)
-                
+                this.parentNode.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode.parentNode)
             })
 
         })
     })
-    document.querySelector('#example')
-    $(document).ready(function() {
-        var table = $('#example').DataTable( {
-            fixedHeader: {
-                header: true,
-                footer: true
-            }
-        } );
-    } );
+  
 })
 

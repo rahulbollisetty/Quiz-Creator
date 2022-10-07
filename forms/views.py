@@ -1,8 +1,10 @@
-from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from django.shortcuts import render
+from django.views.defaults import permission_denied,page_not_found,server_error
+from django.urls import reverse
+from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from django.http.response import StreamingHttpResponse
 from .models import User,Options,Question,Ans,Exam,Responses
-from acc.models import Profile
+from django.contrib.auth.decorators import login_required
 import json
 import random
 import string
@@ -10,6 +12,7 @@ import uuid
 import cv2
 
 # Create your views here.
+@login_required
 def index(request):
     form = Exam.objects.filter(owner=request.user.id)
     if request.method == "GET":
@@ -18,7 +21,7 @@ def index(request):
         if form[0].owner != request.user:
             return HttpResponse("You are not authorised to access this form")
         else:
-            return render(request,'index.html', context={'form':form})
+            return render(request,'index.html', context={'form':form,'count':form.count()})
 
 def create(request):
     if request.method == "POST":
@@ -231,7 +234,6 @@ def delete_question(request,id,q_id):
 
 def view_exam(request,id):
     form = Exam.objects.filter(uuid=id)
-    print("here is the error")
     if form.count() == 0:
         return HttpResponse("exam form not found")
     else:
@@ -246,13 +248,14 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+@login_required
 def submit_exam(request,id):
     form = Exam.objects.filter(uuid=id)
     if form.count() == 0:
         return HttpResponse("exam form not found")
     else:
         form = form[0]
-        profile = Profile.objects.get(user_id=request.user.id)
+        profile = User.objects.get(id=request.user.id)
     if request.method == "POST":
         response_id = str(uuid.uuid4()).replace('-','')[0:20]
         response = Responses(response_code=response_id,response_to=form,responder=request.user,responder_ip=get_client_ip(request),responder_email=profile.email)
@@ -264,27 +267,37 @@ def submit_exam(request,id):
             for j in request.POST.getlist(i):
                 answer = Ans(ans=j,corresponds=question)
                 answer.save()
-                print(response.response_to,"this 2")
                 response.response.add(answer)
                 response.save()
-        return render(request,'exam_response.html',context={"form" : form,"code":response_id})
+        return HttpResponseRedirect(reverse('form'))
 
 
-def generate_frames():
-    camera = cv2.VideoCapture('http://127.0.0.1:8000')
-    while True:
-            
-        ## read the camera frame
-        success,frame=camera.read()
-        if not success:
-            break
-        else:
-            ret,buffer=cv2.imencode('.jpg',frame)
-            frame=buffer.tobytes()
+@login_required
+def response(request,id,res_code):
+    form = Exam.objects.filter(uuid=id)
+    if form.count()==0:
+        return HttpResponseRedirect(reverse('404'))
+    else: form = form[0]
+    res = Responses.objects.filter(response_code = res_code)
+    if res.count() == 0:
+        return HttpResponseRedirect(reverse('404'))
+    else: res = res[0]
+    print(res.responder_ip)
+    return render(request, "exam_response.html", {
+        "form": form,
+        "response": res,
+        'user':res.responder.username
+    })
 
-        yield(b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-def video(request):
-    if request.method == "GET":
-        return StreamingHttpResponse(generate_frames(),content_type="multipart/x-mixed-replace;boundary=frame")
+@login_required
+def responses(request,id):
+    form = Exam.objects.filter(uuid=id)
+    if form.count()==0:
+        return HttpResponse('<h1>page-not-found</h1>')
+    else: form = form[0]
+    if form.owner.id != request.user.id:
+        return HttpResponse('<h1>permission denied>')
+    else:
+        resps = Responses.objects.filter(response_to=form.id)
+        
+        return render(request,'responses.html',context={'user':request.user,'responses':resps})
