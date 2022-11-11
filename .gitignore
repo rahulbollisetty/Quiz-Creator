@@ -1,2 +1,2 @@
 env/
-orbit-db/
+**/__pycache__

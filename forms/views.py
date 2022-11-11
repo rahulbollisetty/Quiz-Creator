@@ -9,7 +9,6 @@ import json
 import random
 import string
 import uuid
-import cv2
 
 # Create your views here.
 @login_required
@@ -255,7 +254,10 @@ def submit_exam(request,id):
         return HttpResponse("exam form not found")
     else:
         form = form[0]
-        profile = User.objects.get(id=request.user.id)
+        if request.user.is_authenticted:
+            profile = User.objects.get(id=request.user.id)
+        else: 
+            profile = None
     if request.method == "POST":
         response_id = str(uuid.uuid4()).replace('-','')[0:20]
         response = Responses(response_code=response_id,response_to=form,responder=request.user,responder_ip=get_client_ip(request),responder_email=profile.email)
