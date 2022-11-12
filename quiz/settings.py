@@ -27,7 +27,7 @@ BASE_DIR1 = Path(__file__).resolve().parent.parent
 SECRET_KEY = '^5n%)&p@)=bn1u(8ng4*1z!&#+$*ghdb9+d!9l2v_4c9ub)y6q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 SESSION_COOKIE_SECURE = True 
 SESSION_COOKIE_SAMESITE = None
  
