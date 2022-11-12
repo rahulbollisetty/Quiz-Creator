@@ -4,10 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 # Create your views here.
 
 def home(request):
-    return reverse('login')
+    return HttpResponseRedirect(reverse('login'))
 
 def register(request):
 
