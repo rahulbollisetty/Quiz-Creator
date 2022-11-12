@@ -28,6 +28,11 @@ SECRET_KEY = '^5n%)&p@)=bn1u(8ng4*1z!&#+$*ghdb9+d!9l2v_4c9ub)y6q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+SESSION_COOKIE_SECURE = True 
+SESSION_COOKIE_SAMESITE = None
+ 
+CSRF_COOKIE_SECURE = True 
+CSRF_COOKIE_SAMESITE = 'Strict'
 CSRF_TRUSTED_ORIGINS = [
     'https://acadtutor.azurewebsites.net/'
 ]
