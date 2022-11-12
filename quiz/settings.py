@@ -38,7 +38,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://acadtutor.azurewebsites.net/',
 ]
 
-ALLOWED_HOSTS = ['acadtutor.azurewebsites.net','127.0.0.1']
+ALLOWED_HOSTS = ['acadtutor.azurewebsites.net','127.0.0.1','20.42.118.104']
 
 
 # Application definition
