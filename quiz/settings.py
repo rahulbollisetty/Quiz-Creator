@@ -26,7 +26,7 @@ SECRET_KEY = '^5n%)&p@)=bn1u(8ng4*1z!&#+$*ghdb9+d!9l2v_4c9ub)y6q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['acadtutor.azurewebsites.net','127.0.0.1']
+ALLOWED_HOSTS = ['acadtutor.azurewebsites.net']
 
 
 # Application definition
