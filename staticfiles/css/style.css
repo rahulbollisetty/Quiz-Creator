@@ -1,0 +1,8 @@
+.box{
+    background-color: #f8f9fa;
+    margin: 10px 10px;
+    padding: 1rem 1.5rem;
+}
+.add-option:hover{
+    background-color: rgb(78, 115, 223);
+}
