@@ -34,7 +34,8 @@ SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SECURE = True 
 CSRF_COOKIE_SAMESITE = 'Strict'
 CSRF_TRUSTED_ORIGINS = [
-    'https://acadtutor.azurewebsites.net/'
+    'https://acadtutor.azurewebsites.net/',
+    'http://acadtutor.azurewebsites.net/',
 ]
 
 ALLOWED_HOSTS = ['acadtutor.azurewebsites.net','127.0.0.1']
